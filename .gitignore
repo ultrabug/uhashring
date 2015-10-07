@@ -1,0 +1,7 @@
+*.pyc
+.cache
+.coverage
+.tox
+*.egg-info/
+dist/
+build/
