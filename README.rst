@@ -48,20 +48,20 @@ Advanced usage
     nodes = {
         'node1': {
                 'hostname': 'node1.fqdn',
-                'instance': memcache.Client('node1.fqdn:11211'),
+                'instance': memcache.Client(['node1.fqdn:11211']),
                 'port': 11211,
                 'vnodes': 40,
                 'weight': 1
             },
         'node2': {
                 'hostname': 'node2.fqdn',
-                'instance': memcache.Client('node2.fqdn:11211'),
+                'instance': memcache.Client(['node2.fqdn:11211']),
                 'port': 11211,
                 'vnodes': 40
             },
         'node3': {
                 'hostname': 'node3.fqdn',
-                'instance': memcache.Client('node3.fqdn:11211'),
+                'instance': memcache.Client(['node3.fqdn:11211']),
                 'port': 11211
             }
         }
