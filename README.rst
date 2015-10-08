@@ -26,7 +26,8 @@ Usage
 Basic usage
 -----------
 **uhashring** is very simple and efficient to use:
-::
+
+.. code-block:: python
 
     from uhashring import HashRing
 
@@ -38,7 +39,8 @@ Basic usage
 
 Advanced usage
 --------------
-::
+
+.. code-block:: python
 
     from uhashring import HashRing
 
@@ -84,10 +86,11 @@ Advanced usage
 Default node configuration
 --------------------------
 **uhashring** offers advanced node configuration for real applications, this is the default you get for every added node:
-::
+
+.. code-block:: python
 
     {
-        'hostname': <nodename>,
+        'hostname': nodename,
         'instance': None,
         'port': None,
         'vnodes': 40,
@@ -97,7 +100,8 @@ Default node configuration
 Adding / removing nodes
 -----------------------
 You can add and remove nodes from your consistent hash ring at any time.
-::
+
+.. code-block:: python
 
     from uhashring import HashRing
 
@@ -154,7 +158,8 @@ You can benefit from a consistent hash ring using **uhashring** monkey patching 
 
 python-memcached
 ----------------
-::
+
+.. code-block:: python
 
     import memcache
 
@@ -168,14 +173,16 @@ Installation
 Pypi
 ----
 Using pip:
-::
+
+.. code-block:: sh
 
     $ pip install uhashring
 
 Gentoo Linux
 ------------
 Using emerge:
-::
+
+.. code-block:: sh
 
     $ sudo emerge -a uhashring
 
@@ -183,7 +190,6 @@ Benchmark
 =========
 Usage of the ketama compatible hash (default) has some performance impacts.
 Contributions are welcome as to ways of improving this !
-::
 
     There is a big performance gap in the hash calculation between
     the ketama C binding and its pure python counterpart.
