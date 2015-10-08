@@ -219,3 +219,7 @@ Literature
 - web caching paper: http://www8.org/w8-papers/2a-webserver/caching/paper2.html
 - research paper: http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.23.3738
 - distributed hash table: https://en.wikipedia.org/wiki/Distributed_hash_table
+
+License
+=======
+BSD
