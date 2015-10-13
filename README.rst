@@ -50,20 +50,20 @@ Advanced usage
     nodes = {
         'node1': {
                 'hostname': 'node1.fqdn',
-                'instance': memcache.Client(['node1.fqdn:11211']),
+                'instance': redis.StrictRedis(host='node1.fqdn'),
                 'port': 11211,
                 'vnodes': 40,
                 'weight': 1
             },
         'node2': {
                 'hostname': 'node2.fqdn',
-                'instance': memcache.Client(['node2.fqdn:11211']),
+                'instance': redis.StrictRedis(host='node2.fqdn'),
                 'port': 11211,
                 'vnodes': 40
             },
         'node3': {
                 'hostname': 'node3.fqdn',
-                'instance': memcache.Client(['node3.fqdn:11211']),
+                'instance': redis.StrictRedis(host='node3.fqdn'),
                 'port': 11211
             }
         }
@@ -71,13 +71,13 @@ Advanced usage
     # create a new consistent hash ring with the nodes
     hr = HashRing(nodes)
 
-    # set the 'coconut' key/value on the right host's memcache instance
+    # set the 'coconut' key/value on the right host's redis instance
     hr['coconut'].set('coconut', 'my_value')
 
-    # get the 'coconut' key from the right host's memcache instance
+    # get the 'coconut' key from the right host's redis instance
     hr['coconut'].get('coconut')
 
-    # delete the 'coconut' key on the right host's memcache instance
+    # delete the 'coconut' key on the right host's redis instance
     hr['coconut'].delete('coconut')
 
     # get the node config for the 'coconut' key
