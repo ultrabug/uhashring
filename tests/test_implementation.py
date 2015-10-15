@@ -6,6 +6,7 @@ import types
 
 from collections import Counter
 from uhashring import HashRing
+from uuid import uuid4
 
 
 @pytest.fixture
@@ -149,3 +150,8 @@ def test_print_without_error(ring):
     assert ring.print_continuum() == None
     ring = HashRing()
     assert ring.print_continuum() == None
+
+
+def test_with_non_str_objects(ring):
+    uid = uuid4()
+    ring.get_node(uid)

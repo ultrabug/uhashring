@@ -164,12 +164,12 @@ class HashRing(object):
         """
         if replica:
             key = '%s:%s' % (key, replica)
-        return int(md5(key.encode('utf-8')).hexdigest(), 16)
+        return int(md5(str(key).encode('utf-8')).hexdigest(), 16)
 
     def _hashi_ketama(self, key, replica=0):
         """Returns a ketama compatible hash from the given key.
         """
-        dh = self._listbytes(md5(key.encode('utf-8')).digest())
+        dh = self._listbytes(md5(str(key).encode('utf-8')).digest())
         rd = replica * 4
         return (
             (dh[3 + rd] << 24) | (dh[2 + rd] << 16) |
