@@ -267,6 +267,12 @@ class HashRing(object):
         """
         return self._get(key, 'dict')
 
+    def get_instances(self):
+        """Returns a list of the instances of all the configured nodes.
+        """
+        return [c.get('instance') for c in self._nodes.values()
+                if c.get('instance')]
+
     def get_key(self, key):
         """Alias of ketama hashi method, returns the hash of the given key.
 

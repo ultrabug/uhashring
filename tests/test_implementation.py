@@ -133,6 +133,7 @@ def test_empty_ring():
 def test_methods_return_types(ring):
     assert isinstance(ring['test'], type(None))
     assert isinstance(ring.get('test'), dict)
+    assert isinstance(ring.get_instances(), list)
     assert isinstance(ring.get_node('test'), str)
     assert isinstance(ring.get_nodes(), list)
     assert isinstance(ring.get_node_hostname('test'), str)

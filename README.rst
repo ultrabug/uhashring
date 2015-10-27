@@ -129,6 +129,7 @@ Available methods
 - **add_node(nodename, conf)**: add (or overwrite) the node in the ring with the given config.
 - **get(key)**: returns the node object dict matching the hashed key.
 - **get_key(key)**: alias of ketama hashi method, returns the hash of the given key.
+- **get_instances()**: returns a list of the instances of all the configured nodes.
 - **get_node(key)**: returns the node name of the node matching the hashed key.
 - **get_node_hostname(key)**: returns the hostname of the node matching the hashed key.
 - **get_node_instance(key)**: returns the instance of the node matching the hashed key.
