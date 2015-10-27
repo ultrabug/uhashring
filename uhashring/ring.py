@@ -246,6 +246,8 @@ class HashRing(object):
     def conf(self):
         return self._nodes
 
+    nodes = conf
+
     @property
     def distribution(self):
         return self._distribution

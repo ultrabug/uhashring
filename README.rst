@@ -150,6 +150,7 @@ Available properties
 - **conf**: dict of all the nodes and their configuration.
 - **continuum**: same as ring.
 - **distribution**: counter of the nodes distribution in the consistent hash ring.
+- **nodes**: same as conf.
 - **ring**: hash key/node mapping of the consistent hash ring.
 - **size**: size of the consistent hash ring.
 

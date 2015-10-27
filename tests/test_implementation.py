@@ -69,6 +69,7 @@ def test_aliases(ring):
     assert ring.get_node_instance == ring.__getitem__
     assert ring.remove_node == ring.__delitem__
     assert ring.continuum == ring.ring
+    assert ring.nodes == ring.conf
 
 
 def test_ketama_ring_hashi(ring):
