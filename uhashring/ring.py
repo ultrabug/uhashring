@@ -194,7 +194,7 @@ class HashRing(object):
 
         :param data: the string to int iterate upon.
         """
-        return [ord(char) for char in data]
+        return map(ord, data)
 
     def _remove_node(self, nodename):
         """Remove the given node from the continuum/ring.
