@@ -33,6 +33,11 @@ def ring_fast():
     return ring
 
 
+def weight_fn(**conf):
+    print conf
+    return int(conf['nodename'][-1])
+
+
 def test_ring_size(ring, ring_fast):
     assert ring.size == len(ring.get_nodes()) * 160
     assert ring.size == len(ring._keys)
@@ -70,6 +75,7 @@ def test_aliases(ring):
     assert ring.remove_node == ring.__delitem__
     assert ring.continuum == ring.ring
     assert ring.nodes == ring.conf
+    assert ring.regenerate == ring._create_ring
 
 
 def test_ketama_ring_hashi(ring):
@@ -157,3 +163,44 @@ def test_print_without_error(ring):
 def test_with_non_str_objects(ring):
     uid = uuid4()
     ring.get_node(uid)
+
+
+def test_weight_fn():
+    ring = HashRing(
+        nodes={'node1': 1,
+               'node2': 1,
+               'node3': 1},
+        replicas=4,
+        vnodes=40,
+        compat=True,
+        weight_fn=weight_fn)
+
+    assert ring.distribution['node1'] == 80
+    assert ring.distribution['node2'] == 160
+    assert ring.distribution['node3'] == 240
+
+    ring.regenerate
+
+    assert ring.distribution['node1'] == 80
+    assert ring.distribution['node2'] == 160
+    assert ring.distribution['node3'] == 240
+
+    with pytest.raises(TypeError):
+        ring = HashRing(
+        nodes={'node1': 1,
+               'node2': 1,
+               'node3': 1},
+        replicas=4,
+        vnodes=40,
+        compat=True,
+        weight_fn=12)
+
+    with pytest.raises(TypeError):
+        ring = HashRing(
+        nodes={'node1': 1,
+               'node2': 1,
+               'node3': 1},
+        replicas=4,
+        vnodes=40,
+        compat=True,
+        weight_fn='coconut')
