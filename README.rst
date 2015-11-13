@@ -117,12 +117,43 @@ You can add and remove nodes from your consistent hash ring at any time.
     # add node4 with a weight of 10
     hr.add_node('node4', {'weight': 10})
 
+Customizable node weight calculation
+------------------------------------
+
+.. code-block:: python
+
+    from uhashring import HashRing
+
+    def weight_fn(**conf):
+        """Returns the last digit of the node name as its weight.
+
+        :param conf: node configuration in the ring, example:
+            {
+             'hostname': 'node3',
+             'instance': None,
+             'nodename': 'node3',
+             'port': None,
+             'vnodes': 40,
+             'weight': 1
+            }
+        """
+        return int(conf['nodename'][-1])
+
+    # this is a 3 nodes consistent hash ring
+    hr = HashRing(nodes=['node1', 'node2', 'node3'], weight_fn=weight_fn)
+
+    # dynamic weight assignment thanks to the weight_fn
+    print(hr.distribution)
+
+    # >>> Counter({'node3': 240, 'node2': 160, 'node1': 80})
+
 HashRing options
 ----------------
 - **nodes**: nodes used to create the continuum (see doc for format).
 - **replicas**: number of replicas per node (forced to 4 in compatibility mode).
 - **vnodes**: default number of vnodes per node.
 - **compat**: use a ketama compatible hash calculation (default True).
+- **weight_fn**: user provided function to calculate the node's weight, gets the node conf dict as kwargs.
 
 Available methods
 -----------------
@@ -143,6 +174,7 @@ Available methods
 - **iterate_nodes(key, distinct)**: hash_ring compatibility implementation, same as range but returns tuples as a generator.
 - **print_continuum()**: prints a ketama compatible continuum report.
 - **range(key, size, unique)**: returns a (unique) list of max (size) nodes' configuration available in the consistent hash ring.
+- **regenerate**: regenerate the ring from the current nodes configuration, useful only when using *weight_fn*.
 - **remove_node(nodename)**: remove the given node from the ring
 
 Available properties
