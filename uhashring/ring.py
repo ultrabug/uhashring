@@ -9,13 +9,19 @@ from sys import version_info
 class HashRing(object):
     """Implement a ketama compatible consistent hashing ring."""
 
-    def __init__(self, nodes=[], replicas=4, vnodes=40, compat=True):
+    def __init__(self,
+                 nodes=[],
+                 replicas=4,
+                 vnodes=40,
+                 compat=True,
+                 weight_fn=None):
         """Create a new HashRing.
 
         :param nodes: nodes used to create the continuum (see doc for format).
         :param replicas: number of replicas per node (=4 if compat).
         :param vnodes: default number of vnodes per node.
         :param compat: use a ketama compatible hash calculation.
+        :param weight_fn: use this function to calculate the node's weight.
         """
         self._default_vnodes = vnodes
         self._distribution = Counter()
@@ -23,6 +29,10 @@ class HashRing(object):
         self._nodes = {}
         self._replicas = 4 if compat else replicas
         self._ring = {}
+
+        if weight_fn and not hasattr(weight_fn, '__call__'):
+            raise TypeError('weight_fn should be a callable function')
+        self._weight_fn = weight_fn
 
         self._configure_hashi(compat)
         self._configure_nodes(nodes)
@@ -92,14 +102,18 @@ class HashRing(object):
                     raise ValueError(
                         'node configuration should be a dict or an int,'
                         ' got {}'.format(type(node_conf)))
+            if self._weight_fn:
+                conf['weight'] = self._weight_fn(**conf)
             self._nodes[nodename] = conf
 
     def _create_ring(self):
         """Generate a ketama compatible continuum/ring.
         """
         _weight_sum = 0
-        for conf in self._nodes.values():
-            _weight_sum += conf['weight']
+        for nodename, conf in self._nodes.items():
+            if self._weight_fn:
+                self._nodes[nodename]['weight'] = self._weight_fn(**conf)
+            _weight_sum += self._nodes[nodename]['weight']
         self._weight_sum = _weight_sum
 
         _distribution = Counter()
@@ -113,6 +127,8 @@ class HashRing(object):
         self._distribution = _distribution
         self._keys = _keys
         self._ring = _ring
+
+    regenerate = _create_ring
 
     def _get(self, key, what):
         """Generic getter magic method.
