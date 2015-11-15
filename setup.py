@@ -5,9 +5,9 @@ uhashring
 import os
 import sys
 
+from pkg_resources import get_distribution, parse_version
 from setuptools import find_packages, setup
 from setuptools.command.test import test as TestCommand
-
 
 # Utility function to read the README file.
 # Used for the long_description.  It's nice, because now 1) we have a top level
@@ -26,8 +26,11 @@ class PyTest(TestCommand):
 
     def finalize_options(self):
         TestCommand.finalize_options(self)
-        self.test_args = []
-        self.test_suite = True
+
+        # https://bitbucket.org/pypa/setuptools/commits/cf565b6
+        if get_distribution('setuptools').parsed_version < parse_version('18.4'):
+            self.test_args = []
+            self.test_suite = True
 
     def run_tests(self):
         # import here, cause outside the eggs aren't loaded
