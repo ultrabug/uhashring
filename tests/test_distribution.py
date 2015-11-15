@@ -25,7 +25,7 @@ def test_distribution():
         ring['node{}'.format(i)] = {'instance': 'node_value{}'.format(i)}
 
     distribution = Counter()
-    for i in xrange(numhits):
+    for i in range(numhits):
         key = str(randint(1, numvalues))
         node = ring[key]
         distribution[node] += 1

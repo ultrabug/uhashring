@@ -16,8 +16,8 @@ from uhashring import HashRing
 @pytest.fixture
 def ketama_config_file(request):
     valid_list = NamedTemporaryFile(prefix='py.test_')
-    valid_list.write('127.0.0.1:11211\t600\n')
-    valid_list.write('127.0.0.1:11212\t400\n')
+    valid_list.write(b'127.0.0.1:11211\t600\n')
+    valid_list.write(b'127.0.0.1:11212\t400\n')
     valid_list.flush()
 
     def fin():
@@ -52,6 +52,6 @@ def test_ketama_compatibility(ketama_config_file):
 
     numhits = 1000
     numvalues = 10000
-    for i in xrange(numhits):
+    for i in range(numhits):
         key = str(randint(1, numvalues))
         assert ring.get_server(key) == continuum.get_server(key)
