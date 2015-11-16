@@ -3,10 +3,14 @@
 """
 import pytest
 import types
+import sys
 
 from collections import Counter
 from uhashring import HashRing
 from uuid import uuid4
+
+
+PY3 = sys.version_info >= (3,)
 
 
 @pytest.fixture
@@ -34,7 +38,7 @@ def ring_fast():
 
 
 def weight_fn(**conf):
-    print conf
+    print(conf)
     return int(conf['nodename'][-1])
 
 
@@ -88,6 +92,8 @@ def test_faster_ring_hashi(ring_fast):
     assert h == 12707736894140473154801792860916528374
 
 
+# XXX https://docs.python.org/3/whatsnew/3.0.html#ordering-comparisons
+@pytest.mark.skipif(PY3, reason="requires python26, python27")
 def test_range(ring):
     r = list(ring.range('test'))
     r.sort()
@@ -142,7 +148,7 @@ def test_methods_return_types(ring):
     assert isinstance(ring.get('test'), dict)
     assert isinstance(ring.get_instances(), list)
     assert isinstance(ring.get_node('test'), str)
-    assert isinstance(ring.get_nodes(), list)
+    assert isinstance(ring.get_nodes(), type({}.keys()) if PY3 else list)
     assert isinstance(ring.get_node_hostname('test'), str)
     assert isinstance(ring.get_node_port('test'), type(None))
     assert isinstance(ring.get_node_pos('test'), int)
