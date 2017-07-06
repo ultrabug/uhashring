@@ -80,6 +80,7 @@ class HashRing(object):
                 'nodes configuration should be a list or a dict,'
                 ' got {}'.format(type(nodes)))
 
+        conf_changed = False
         for node in nodes:
             conf = {
                 'hostname': node,
@@ -89,7 +90,12 @@ class HashRing(object):
                 'vnodes': self._default_vnodes,
                 'weight': 1
             }
+            current_conf = self._nodes.get(node, {})
             nodename = node
+            # new node, trigger a ring update
+            if not current_conf:
+                conf_changed = True
+            # complex config
             if isinstance(nodes, dict):
                 node_conf = nodes[node]
                 if isinstance(node_conf, int):
@@ -98,22 +104,28 @@ class HashRing(object):
                     for k, v in node_conf.items():
                         if k in conf:
                             conf[k] = v
+                            # changing those config trigger a ring update
+                            if k in ['nodename', 'vnodes', 'weight']:
+                                if current_conf.get(k) != v:
+                                    conf_changed = True
                 else:
                     raise ValueError(
                         'node configuration should be a dict or an int,'
                         ' got {}'.format(type(node_conf)))
             if self._weight_fn:
                 conf['weight'] = self._weight_fn(**conf)
+            # changing the weight of a node trigger a ring update
+            if current_conf.get('weight') != conf['weight']:
+                    conf_changed = True
             self._nodes[nodename] = conf
+        return conf_changed
 
     def _create_ring(self):
         """Generate a ketama compatible continuum/ring.
         """
         _weight_sum = 0
-        for nodename, conf in self._nodes.items():
-            if self._weight_fn:
-                self._nodes[nodename]['weight'] = self._weight_fn(**conf)
-            _weight_sum += self._nodes[nodename]['weight']
+        for node_conf in self._nodes.values():
+            _weight_sum += node_conf['weight']
         self._weight_sum = _weight_sum
 
         _distribution = Counter()
@@ -253,8 +265,8 @@ class HashRing(object):
         :param nodename: the node name.
         :param conf: the node configuration.
         """
-        self._configure_nodes({nodename: conf})
-        self._create_ring()
+        if self._configure_nodes({nodename: conf}):
+            self._create_ring()
 
     add_node = __setitem__
 
