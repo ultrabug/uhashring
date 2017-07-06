@@ -210,3 +210,12 @@ def test_weight_fn():
         vnodes=40,
         compat=True,
         weight_fn='coconut')
+
+
+def test_ring_growth(ring):
+    add_ring = HashRing()
+    for nodename in ring.nodes:
+        add_ring.add_node(nodename)
+
+    assert ring.ring == add_ring.ring
+    assert ring.distribution == add_ring.distribution
