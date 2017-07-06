@@ -227,15 +227,15 @@ Contributions are welcome as to ways of improving this !
 
     There is a big performance gap in the hash calculation between
     the ketama C binding and its pure python counterpart.
-    
+
     Python 3 is doing way better than python 2 thanks to its
     native bytes/int representation.
 
     Quick benchmark, for 1 million generated ketama compatible keys:
-        - python_ketama C binding: 0.8427069187164307 ms
-        - python 2: 5.462762832641602 ms
-        - python 3: 3.570068597793579 ms
-        - pypy: 1.6146340370178223 ms
+        - python_ketama C binding: 0.8427069187164307 s
+        - python 2: 5.462762832641602 s
+        - python 3: 3.570068597793579 s
+        - pypy: 1.6146340370178223 s
 
     When using python 2 and ketama compatibility is not important, you
     can get a better hashing speed using the other provided hashing.
@@ -243,9 +243,9 @@ Contributions are welcome as to ways of improving this !
     hr = HashRing(nodes=[], compat=False)
 
     Quick benchmark, for 1 million generated hash keys:
-        - python 2: 3.7595579624176025 ms
-        - python 3: 3.268343687057495 ms
-        - pypy: 1.9193649291992188 ms
+        - python 2: 3.7595579624176025 s
+        - python 3: 3.268343687057495 s
+        - pypy: 1.9193649291992188 s
 
 Literature
 ==========

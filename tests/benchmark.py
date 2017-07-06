@@ -25,7 +25,7 @@ if ketama:
         for i in range(num):
             key = 'myval-{}'.format(i)
             kt.get_server(key)
-        print('ketama took {} ms'.format(time() - pt))
+        print('ketama took {} s'.format(time() - pt))
 
 # pure python implementation
 ring = HashRing(
@@ -38,4 +38,4 @@ pt = time()
 for i in range(num):
     key = 'myval-{}'.format(i)
     ring.get_server(key)
-print('HashRing took {} ms'.format(time() - pt))
+print('HashRing took {} s'.format(time() - pt))
