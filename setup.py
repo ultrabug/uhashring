@@ -52,6 +52,7 @@ setup(
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
     cmdclass={'test': PyTest},
@@ -66,5 +67,5 @@ setup(
     platforms='any',
     tests_require=['python-memcached', 'pytest'],
     url='https://github.com/ultrabug/uhashring',
-    version='0.4',
+    version='0.5',
     zip_safe=True)
