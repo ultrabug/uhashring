@@ -66,7 +66,7 @@ class HashRing(object):
                 self._listbytes = lambda x: x
             self.hashi = self._hashi_ketama
         else:
-            self.hashi = self._hashi_faster
+            self.hashi = self._hashi_md5
 
     def _configure_nodes(self, nodes):
         """Parse and set up the given nodes.
@@ -187,7 +187,7 @@ class HashRing(object):
         else:
             return p
 
-    def _hashi_faster(self, key, replica=None):
+    def _hashi_md5(self, key, replica=None):
         """Returns an integer hash from the given key.
         """
         if replica:
