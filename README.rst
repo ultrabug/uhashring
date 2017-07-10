@@ -147,6 +147,22 @@ Customizable node weight calculation
 
     # >>> Counter({'node3': 240, 'node2': 160, 'node1': 80})
 
+Customizable hash function
+--------------------------
+
+.. code-block:: python
+
+    from uhashring import HashRing
+
+    # import your own hash function (must be a callable)
+    from mmh3 import hash as m3h
+
+    # this is a 3 nodes consistent hash ring
+    hr = HashRing(nodes=['node1', 'node2', 'node3'], hash_fn=m3h)
+
+    # dynamic weight assignment thanks to the weight_fn
+    print(hr.get_node('my key hashed by your function'))
+
 HashRing options
 ----------------
 - **nodes**: nodes used to create the continuum (see doc for format).

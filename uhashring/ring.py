@@ -14,7 +14,8 @@ class HashRing(object):
                  replicas=4,
                  vnodes=40,
                  compat=True,
-                 weight_fn=None):
+                 weight_fn=None,
+                 hash_fn=None):
         """Create a new HashRing.
 
         :param nodes: nodes used to create the continuum (see doc for format).
@@ -22,13 +23,22 @@ class HashRing(object):
         :param vnodes: default number of vnodes per node.
         :param compat: use a ketama compatible hash calculation.
         :param weight_fn: use this function to calculate the node's weight.
+        :param hash_fn: use this callable function to hash keys.
         """
         self._default_vnodes = vnodes
         self._distribution = Counter()
+        self._hash_fn = None
         self._keys = []
         self._nodes = {}
         self._replicas = 4 if compat else replicas
         self._ring = {}
+
+        if hash_fn:
+            if not hasattr(hash_fn, '__call__'):
+                raise TypeError('hash_fn should be a callable function')
+            self._hash_fn = hash_fn
+            self._default_vnodes = 160
+            self._replicas = 1
 
         if weight_fn and not hasattr(weight_fn, '__call__'):
             raise TypeError('weight_fn should be a callable function')
@@ -66,7 +76,11 @@ class HashRing(object):
                 self._listbytes = lambda x: x
             self.hashi = self._hashi_ketama
         else:
-            self.hashi = self._hashi_md5
+            # backward compatibility code
+            if self._hash_fn is None:
+                self.hashi = self._hashi_md5
+            else:
+                self.hashi = self._hashi_user
 
     def _configure_nodes(self, nodes):
         """Parse and set up the given nodes.
@@ -202,6 +216,12 @@ class HashRing(object):
         return (
             (dh[3 + rd] << 24) | (dh[2 + rd] << 16) |
             (dh[1 + rd] << 8) | dh[0 + rd])
+
+    def _hashi_user(self, key, replica=0):
+        """Returns an integer hash from the given key using the function
+        defined by the user.
+        """
+        return self._hash_fn(key)
 
     def _hashi_weight_generator(self, nodename):
         """Calculate the weight factor of the given node and
