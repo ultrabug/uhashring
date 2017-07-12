@@ -14,7 +14,7 @@ This full featured implementation offers:
 - a lot of **convenient methods** to use your consistent hash ring in real world applications.
 - simple **integration** with other libs such as memcache through monkey patching.
 - all the missing functions in the libketama C python binding (which is not even available on pypi).
-- another and more performant consistent hash algorithm if you don't care about the ketama compatibility (see benchmark).
+- possibility to **use your own weight and hash functions** if you don't care about the ketama compatibility.
 - **instance-oriented usage** so you can use your consistent hash ring object directly in your code (see advanced usage).
 - native **pypy support**.
 - tests of implementation, key distribution and ketama compatibility.
@@ -139,10 +139,10 @@ Customizable node weight calculation
         """
         return int(conf['nodename'][-1])
 
-    # this is a 3 nodes consistent hash ring
+    # this is a 3 nodes consistent hash ring with user defined weight function
     hr = HashRing(nodes=['node1', 'node2', 'node3'], weight_fn=weight_fn)
 
-    # dynamic weight assignment thanks to the weight_fn
+    # distribution with custom weight assignment
     print(hr.distribution)
 
     # >>> Counter({'node3': 240, 'node2': 160, 'node1': 80})
@@ -155,12 +155,13 @@ Customizable hash function
     from uhashring import HashRing
 
     # import your own hash function (must be a callable)
+    # in this example, MurmurHash v3
     from mmh3 import hash as m3h
 
-    # this is a 3 nodes consistent hash ring
+    # this is a 3 nodes consistent hash ring with user defined hash function
     hr = HashRing(nodes=['node1', 'node2', 'node3'], hash_fn=m3h)
 
-    # dynamic weight assignment thanks to the weight_fn
+    # now all lookup operations will use the m3h hash function
     print(hr.get_node('my key hashed by your function'))
 
 HashRing options
