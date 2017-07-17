@@ -33,12 +33,9 @@ class HashRing(object):
         self._replicas = 4 if compat else replicas
         self._ring = {}
 
-        if hash_fn:
-            if not hasattr(hash_fn, '__call__'):
-                raise TypeError('hash_fn should be a callable function')
-            self._hash_fn = hash_fn
-            self._default_vnodes = 160
-            self._replicas = 1
+        if hash_fn and not hasattr(hash_fn, '__call__'):
+            raise TypeError('hash_fn should be a callable function')
+        self._hash_fn = hash_fn
 
         if weight_fn and not hasattr(weight_fn, '__call__'):
             raise TypeError('weight_fn should be a callable function')
