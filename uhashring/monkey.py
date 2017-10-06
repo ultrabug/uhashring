@@ -26,7 +26,7 @@ def patch_memcache():
         self.uhashring = HashRing(nodes)
 
     def _get_server(self, key):
-        if isinstance(key, types.TupleType):
+        if isinstance(key, tuple):
             return self._old_get_server(key)
 
         for i in range(self._SERVER_RETRIES):

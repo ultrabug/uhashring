@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 """
-try:
-    import memcache as test_import
-    has_mc = True
-except:
-    has_mc = False
 
 from uhashring import HashRing
 from uhashring import monkey
@@ -18,9 +13,6 @@ def test_patch_memcache():
         test key -> 11212
         zzzzzzzzzz key -> 11211
     """
-    if not has_mc:
-        return
-
     monkey.patch_memcache()
 
     import memcache
