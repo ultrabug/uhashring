@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import types
 from uhashring import HashRing
 
 __all__ = ['patch_memcache']

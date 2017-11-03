@@ -1,83 +1,49 @@
 # -*- coding: utf-8 -*-
 
-from bisect import bisect, bisect_left, insort
-from collections import Counter
-from hashlib import md5
-from sys import version_info
+from bisect import bisect
+
+from uhashring.ring_ketama import KetamaRing
+from uhashring.ring_meta import MetaRing
 
 
 class HashRing(object):
-    """Implement a ketama compatible consistent hashing ring."""
+    """Implement a consistent hashing ring."""
 
     def __init__(self,
                  nodes=[],
-                 replicas=4,
-                 vnodes=40,
+                 replicas=None,
+                 vnodes=None,
                  compat=True,
                  weight_fn=None,
                  hash_fn=None):
-        """Create a new HashRing.
+        """Create a new HashRing given the implementation.
 
         :param nodes: nodes used to create the continuum (see doc for format).
-        :param replicas: number of replicas per node (=4 if compat).
+        :param replicas: (obsolete) number of replicas per node.
         :param vnodes: default number of vnodes per node.
-        :param compat: use a ketama compatible hash calculation.
+        :param compat: (obsolete) use a ketama compatible hash calculation.
         :param weight_fn: use this function to calculate the node's weight.
-        :param hash_fn: use this callable function to hash keys.
+        :param hash_fn: use this callable function to hash keys, can be set to
+                        'ketama' to use the ketama compatible implementation.
         """
-        self._default_vnodes = vnodes
-        self._distribution = Counter()
-        self._hash_fn = None
-        self._keys = []
-        self._nodes = {}
-        self._replicas = 4 if compat else replicas
-        self._ring = {}
+        if compat is True or hash_fn == 'ketama':
+            if vnodes is None:
+                vnodes = 40
+            self.runtime = KetamaRing()
+        else:
+            if vnodes is None:
+                vnodes = 160
+            self.runtime = MetaRing(hash_fn)
 
-        if hash_fn and not hasattr(hash_fn, '__call__'):
-            raise TypeError('hash_fn should be a callable function')
-        self._hash_fn = hash_fn
+        self._default_vnodes = vnodes
+        self.hashi = self.runtime.hashi
 
         if weight_fn and not hasattr(weight_fn, '__call__'):
             raise TypeError('weight_fn should be a callable function')
         self._weight_fn = weight_fn
 
-        self._configure_hashi(compat)
-        self._configure_nodes(nodes)
-        self._create_ring()
-
-    def _configure_hashi(self, compat):
-        """Use a ketama compatible hash in compatibility mode (default).
-
-        There is a big performance gap in the hash calculation between
-        the ketama C binding and its pure python counterpart.
-
-        Python 3 is doing way better than python 2 thanks to its
-        native bytes/int representation.
-
-        Quick benchmark, for 1 million generated ketama compatible keys:
-            - python_ketama C binding: 0.8427069187164307 ms
-            - python 2: 5.462762832641602 ms
-            - python 3: 3.570068597793579 ms
-            - pypy: 1.6146340370178223 ms
-
-        When using python 2 and ketama compatibility is not important, you
-        can get a better hashing speed using the other provided hashing.
-
-        Quick benchmark, for 1 million generated hash keys:
-            - python 2: 3.7595579624176025 ms
-            - python 3: 3.268343687057495 ms
-            - pypy: 1.9193649291992188 ms
-        """
-        if compat:
-            if version_info >= (3, ):
-                self._listbytes = lambda x: x
-            self.hashi = self._hashi_ketama
-        else:
-            # backward compatibility code
-            if self._hash_fn is None:
-                self.hashi = self._hashi_md5
-            else:
-                self.hashi = self._hashi_user
+        if self._configure_nodes(nodes):
+            self.runtime._create_ring(self.runtime._nodes.items())
 
     def _configure_nodes(self, nodes):
         """Parse and set up the given nodes.
@@ -101,7 +67,7 @@ class HashRing(object):
                 'vnodes': self._default_vnodes,
                 'weight': 1
             }
-            current_conf = self._nodes.get(node, {})
+            current_conf = self.runtime._nodes.get(node, {})
             nodename = node
             # new node, trigger a ring update
             if not current_conf:
@@ -127,143 +93,16 @@ class HashRing(object):
                 conf['weight'] = self._weight_fn(**conf)
             # changing the weight of a node trigger a ring update
             if current_conf.get('weight') != conf['weight']:
-                    conf_changed = True
-            self._nodes[nodename] = conf
+                conf_changed = True
+            self.runtime._nodes[nodename] = conf
         return conf_changed
-
-    def _create_ring(self):
-        """Generate a ketama compatible continuum/ring.
-        """
-        _weight_sum = 0
-        for node_conf in self._nodes.values():
-            _weight_sum += node_conf['weight']
-        self._weight_sum = _weight_sum
-
-        _distribution = Counter()
-        _keys = []
-        _ring = {}
-        for nodename in self._nodes:
-            for h in self._hashi_weight_generator(nodename):
-                _ring[h] = nodename
-                insort(_keys, h)
-                _distribution[nodename] += 1
-        self._distribution = _distribution
-        self._keys = _keys
-        self._ring = _ring
-
-    regenerate = _create_ring
-
-    def _get(self, key, what):
-        """Generic getter magic method.
-
-        The node with the nearest but not less hash value is returned.
-
-        :param key: the key to look for.
-        :param what: the information to look for in, allowed values:
-            - instance (default): associated node instance
-            - nodename: node name
-            - pos: index of the given key in the ring
-            - tuple: ketama compatible (pos, name) tuple
-            - weight: node weight
-        """
-        if not self._ring:
-            return None
-
-        pos = self._get_pos(key)
-        if what == 'pos':
-            return pos
-
-        nodename = self._ring[self._keys[pos]]
-        if what in ['hostname', 'instance', 'port', 'weight']:
-            return self._nodes[nodename][what]
-        elif what == 'dict':
-            return self._nodes[nodename]
-        elif what == 'nodename':
-            return nodename
-        elif what == 'tuple':
-            return (self._keys[pos], nodename)
-
-    def _get_pos(self, key):
-        """Get the index of the given key in the sorted key list.
-
-        We return the position with the nearest hash based on
-        the provided key unless we reach the end of the continuum/ring
-        in which case we return the 0 (beginning) index position.
-
-        :param key: the key to hash and look for.
-        """
-        p = bisect(self._keys, self.hashi(key))
-        if p == len(self._keys):
-            return 0
-        else:
-            return p
-
-    def _hashi_md5(self, key, replica=None):
-        """Returns an integer hash from the given key.
-        """
-        if replica:
-            key = '%s:%s' % (key, replica)
-        return int(md5(str(key).encode('utf-8')).hexdigest(), 16)
-
-    def _hashi_ketama(self, key, replica=0):
-        """Returns a ketama compatible hash from the given key.
-        """
-        dh = self._listbytes(md5(str(key).encode('utf-8')).digest())
-        rd = replica * 4
-        return (
-            (dh[3 + rd] << 24) | (dh[2 + rd] << 16) |
-            (dh[1 + rd] << 8) | dh[0 + rd])
-
-    def _hashi_user(self, key, replica=0):
-        """Returns an integer hash from the given key using the function
-        defined by the user.
-        """
-        return self._hash_fn(key)
-
-    def _hashi_weight_generator(self, nodename):
-        """Calculate the weight factor of the given node and
-        yield its hash key for every configured replica.
-
-        :param nodename: the node name.
-        """
-        ks = (self._nodes[nodename]['vnodes'] * len(self._nodes) *
-              self._nodes[nodename]['weight']) // self._weight_sum
-        for w in range(0, ks):
-            w_nodename = '%s-%s' % (nodename, w)
-            for i in range(0, self._replicas):
-                yield self.hashi(w_nodename, replica=i)
-
-    @staticmethod
-    def _listbytes(data):
-        """Python 2 compatible int iterator from str.
-
-        :param data: the string to int iterate upon.
-        """
-        return map(ord, data)
-
-    def _remove_node(self, nodename):
-        """Remove the given node from the continuum/ring.
-
-        :param nodename: the node name.
-        """
-        if nodename not in self._nodes:
-            raise KeyError('node \'{}\' not found, available nodes: {}'.format(
-                nodename, self._nodes.keys()))
-
-        for h in self._hashi_weight_generator(nodename):
-            del self._ring[h]
-            index = bisect_left(self._keys, h)
-            del self._keys[index]
-        self._distribution.pop(nodename)
-        self._weight_sum -= self._nodes[nodename]['weight']
-        self._nodes.pop(nodename)
 
     def __delitem__(self, nodename):
         """Remove the given node.
 
         :param nodename: the node name.
         """
-        self._remove_node(nodename)
+        self.runtime._remove_node(nodename)
 
     remove_node = __delitem__
 
@@ -283,29 +122,54 @@ class HashRing(object):
         :param conf: the node configuration.
         """
         if self._configure_nodes({nodename: conf}):
-            self._create_ring()
+            self.runtime._create_ring([(nodename, self._nodes[nodename])])
 
     add_node = __setitem__
 
-    @property
-    def conf(self):
-        return self._nodes
+    def _get_pos(self, key):
+        """Get the index of the given key in the sorted key list.
 
-    nodes = conf
+        We return the position with the nearest hash based on
+        the provided key unless we reach the end of the continuum/ring
+        in which case we return the 0 (beginning) index position.
 
-    @property
-    def distribution(self):
-        return self._distribution
+        :param key: the key to hash and look for.
+        """
+        p = bisect(self.runtime._keys, self.hashi(key))
+        if p == len(self.runtime._keys):
+            return 0
+        else:
+            return p
 
-    @property
-    def ring(self):
-        return self._ring
+    def _get(self, key, what):
+        """Generic getter magic method.
 
-    continuum = ring
+        The node with the nearest but not less hash value is returned.
 
-    @property
-    def size(self):
-        return len(self._ring)
+        :param key: the key to look for.
+        :param what: the information to look for in, allowed values:
+            - instance (default): associated node instance
+            - nodename: node name
+            - pos: index of the given key in the ring
+            - tuple: ketama compatible (pos, name) tuple
+            - weight: node weight
+        """
+        if not self.runtime._ring:
+            return None
+
+        pos = self._get_pos(key)
+        if what == 'pos':
+            return pos
+
+        nodename = self.runtime._ring[self.runtime._keys[pos]]
+        if what in ['hostname', 'instance', 'port', 'weight']:
+            return self.runtime._nodes[nodename][what]
+        elif what == 'dict':
+            return self.runtime._nodes[nodename]
+        elif what == 'nodename':
+            return nodename
+        elif what == 'tuple':
+            return (self.runtime._keys[pos], nodename)
 
     def get(self, key):
         """Returns the node object dict matching the hashed key.
@@ -317,7 +181,7 @@ class HashRing(object):
     def get_instances(self):
         """Returns a list of the instances of all the configured nodes.
         """
-        return [c.get('instance') for c in self._nodes.values()
+        return [c.get('instance') for c in self.runtime._nodes.values()
                 if c.get('instance')]
 
     def get_key(self, key):
@@ -367,12 +231,12 @@ class HashRing(object):
     def get_nodes(self):
         """Returns a list of the names of all the configured nodes.
         """
-        return self._nodes.keys()
+        return self.runtime._nodes.keys()
 
     def get_points(self):
         """Returns a ketama compatible list of (position, nodename) tuples.
         """
-        return [(k, self._ring[k]) for k in self._keys]
+        return [(k, self.runtime._ring[k]) for k in self.runtime._keys]
 
     def get_server(self, key):
         """Returns a ketama compatible (position, nodename) tuple.
@@ -391,7 +255,7 @@ class HashRing(object):
         if `distinct` is set, then the nodes returned will be unique,
         i.e. no virtual copies will be returned.
         """
-        if not self._ring:
+        if not self.runtime._ring:
             yield None
         else:
             for node in self.range(key, unique=distinct):
@@ -400,7 +264,7 @@ class HashRing(object):
     def print_continuum(self):
         """Prints a ketama compatible continuum report.
         """
-        numpoints = len(self._keys)
+        numpoints = len(self.runtime._keys)
         if numpoints:
             print('Numpoints in continuum: {}'.format(numpoints))
         else:
@@ -419,32 +283,67 @@ class HashRing(object):
         """
         all_nodes = set()
         if unique:
-            size = size or len(self._nodes)
+            size = size or len(self.runtime._nodes)
         else:
             all_nodes = []
 
         pos = self._get_pos(key)
-        for key in self._keys[pos:]:
-            nodename = self._ring[key]
+        for key in self.runtime._keys[pos:]:
+            nodename = self.runtime._ring[key]
             if unique:
                 if nodename in all_nodes:
                     continue
                 all_nodes.add(nodename)
             else:
                 all_nodes.append(nodename)
-            yield self._nodes[nodename]
+            yield self.runtime._nodes[nodename]
             if len(all_nodes) == size:
                 break
         else:
-            for i, key in enumerate(self._keys):
+            for i, key in enumerate(self.runtime._keys):
                 if i < pos:
-                    nodename = self._ring[key]
+                    nodename = self.runtime._ring[key]
                     if unique:
                         if nodename in all_nodes:
                             continue
                         all_nodes.add(nodename)
                     else:
                         all_nodes.append(nodename)
-                    yield self._nodes[nodename]
+                    yield self.runtime._nodes[nodename]
                     if len(all_nodes) == size:
                         break
+
+    def regenerate(self):
+        self.runtime._create_ring(self.runtime._nodes.items())
+
+    @property
+    def conf(self):
+        return self.runtime._nodes
+
+    nodes = conf
+
+    @property
+    def distribution(self):
+        return self.runtime._distribution
+
+    @property
+    def ring(self):
+        return self.runtime._ring
+
+    continuum = ring
+
+    @property
+    def size(self):
+        return len(self.runtime._ring)
+
+    @property
+    def _ring(self):
+        return self.runtime._ring
+
+    @property
+    def _nodes(self):
+        return self.runtime._nodes
+
+    @property
+    def _keys(self):
+        return self.runtime._keys
