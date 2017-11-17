@@ -5,7 +5,7 @@ uhashring
 
 .. |version| image:: https://img.shields.io/pypi/v/uhashring.svg
 
-**uhashring** implements **consistent hashing** in pure python and is fully compatible with `ketama <https://github.com/RJ/ketama>`_.
+**uhashring** implements **consistent hashing** in pure python.
 
 Consistent hashing is mostly used on distributed systems/caches/databases as this avoid the total reshuffling of your key-node mappings when adding or removing a node in your ring (called continuum on libketama). More information and details about this can be found in the *literature* section.
 
@@ -13,13 +13,23 @@ This full featured implementation offers:
 
 - a lot of **convenient methods** to use your consistent hash ring in real world applications.
 - simple **integration** with other libs such as memcache through monkey patching.
-- all the missing functions in the libketama C python binding (which is not even available on pypi).
+- a full `ketama <https://github.com/RJ/ketama>`_ compatibility if you need to use it.
+- all the missing functions in the libketama C python binding (which is not even available on pypi) for ketama users.
 - possibility to **use your own weight and hash functions** if you don't care about the ketama compatibility.
 - **instance-oriented usage** so you can use your consistent hash ring object directly in your code (see advanced usage).
 - native **pypy support**.
 - tests of implementation, key distribution and ketama compatibility.
 
-**uhashring** default is to be compatible with the ketama implementation so you get 40 vnodes and 4 replicas = 160 points per node in the ring. Per node weight is also supported and will affect the nodes distribution on the ring.
+Per node weight is also supported and will affect the nodes distribution on the ring.
+
+IMPORTANT
+=========
+
+Since v1.0 **uhashring** default has changed to use a md5 hash function with 160 vnodes (points) per node in the ring.
+
+This change was motivated by the fact that the ketama hash function has more chances of collisions and thus requires a complete ring regeneration when the nodes topology change. This could lead to degraded performances on rapidly changing or unstable environments where nodes keep going down and up. The md5 implementation provides a linear performance when adding or removing a node from the ring!
+
+Reminder: when using **uhashring** with the ketama implementation and get 40 vnodes and 4 replicas = 160 points per node in the ring.
 
 Usage
 =====
@@ -33,6 +43,20 @@ Basic usage
 
     # create a consistent hash ring of 3 nodes of weight 1
     hr = HashRing(nodes=['node1', 'node2', 'node3'])
+
+    # get the node name for the 'coconut' key
+    target_node = hr.get_node('coconut')
+
+Ketama usage
+------------
+Simply set the **hash_fn** parameter to **ketama**:
+
+.. code-block:: python
+
+    from uhashring import HashRing
+
+    # create a consistent hash ring of 3 nodes of weight 1
+    hr = HashRing(nodes=['node1', 'node2', 'node3'], hash_fn='ketama')
 
     # get the node name for the 'coconut' key
     target_node = hr.get_node('coconut')
@@ -167,16 +191,15 @@ Customizable hash function
 HashRing options
 ----------------
 - **nodes**: nodes used to create the continuum (see doc for format).
-- **replicas**: number of replicas per node (forced to 4 in compatibility mode).
+- **hash_fn**: use this callable function to hash keys, can be set to 'ketama' to use the ketama compatible implementation.
 - **vnodes**: default number of vnodes per node.
-- **compat**: use a ketama compatible hash calculation (default True).
 - **weight_fn**: user provided function to calculate the node's weight, gets the node conf dict as kwargs.
 
 Available methods
 -----------------
 - **add_node(nodename, conf)**: add (or overwrite) the node in the ring with the given config.
 - **get(key)**: returns the node object dict matching the hashed key.
-- **get_key(key)**: alias of ketama hashi method, returns the hash of the given key.
+- **get_key(key)**: alias of the current hashi method, returns the hash of the given key.
 - **get_instances()**: returns a list of the instances of all the configured nodes.
 - **get_node(key)**: returns the node name of the node matching the hashed key.
 - **get_node_hostname(key)**: returns the hostname of the node matching the hashed key.
@@ -187,7 +210,7 @@ Available methods
 - **get_nodes()**: returns a list of the names of all the configured nodes.
 - **get_points()**: returns a ketama compatible list of (position, nodename) tuples.
 - **get_server(key)**: returns a ketama compatible (position, nodename) tuple.
-- **hashi(key)**: returns the hash of the given key (on compat mode, this is the same as libketama).
+- **hashi(key)**: returns the hash of the given key (on ketama mode, this is the same as libketama).
 - **iterate_nodes(key, distinct)**: hash_ring compatibility implementation, same as range but returns tuples as a generator.
 - **print_continuum()**: prints a ketama compatible continuum report.
 - **range(key, size, unique)**: returns a (unique) list of max (size) nodes' configuration available in the consistent hash ring.

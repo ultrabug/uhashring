@@ -19,7 +19,7 @@ def ring():
         nodes={'node1': 1,
                'node2': 1,
                'node3': 1},
-        compat=True)
+        hash_fn='ketama')
     return ring
 
 
@@ -171,7 +171,7 @@ def test_weight_fn():
         nodes={'node1': 1, 'node2': 1, 'node3': 1},
         replicas=4,
         vnodes=40,
-        compat=True,
+        hash_fn='ketama',
         weight_fn=weight_fn)
 
     assert ring.distribution['node1'] == 80
@@ -189,7 +189,7 @@ def test_weight_fn():
             nodes={'node1': 1, 'node2': 1, 'node3': 1},
             replicas=4,
             vnodes=40,
-            compat=True,
+            hash_fn='ketama',
             weight_fn=12)
 
     with pytest.raises(TypeError):
@@ -197,12 +197,12 @@ def test_weight_fn():
             nodes={'node1': 1, 'node2': 1, 'node3': 1},
             replicas=4,
             vnodes=40,
-            compat=True,
+            hash_fn='ketama',
             weight_fn='coconut')
 
 
 def test_ring_growth_ketama(ring):
-    add_ring = HashRing(compat=True)
+    add_ring = HashRing(hash_fn='ketama')
     for nodename in ring.nodes:
         add_ring.add_node(nodename)
 

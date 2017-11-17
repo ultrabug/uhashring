@@ -9,24 +9,20 @@ from uhashring.ring_meta import MetaRing
 class HashRing(object):
     """Implement a consistent hashing ring."""
 
-    def __init__(self,
-                 nodes=[],
-                 replicas=None,
-                 vnodes=None,
-                 compat=True,
-                 weight_fn=None,
-                 hash_fn=None):
+    def __init__(self, nodes=[], **kwargs):
         """Create a new HashRing given the implementation.
 
         :param nodes: nodes used to create the continuum (see doc for format).
-        :param replicas: (obsolete) number of replicas per node.
-        :param vnodes: default number of vnodes per node.
-        :param compat: (obsolete) use a ketama compatible hash calculation.
-        :param weight_fn: use this function to calculate the node's weight.
         :param hash_fn: use this callable function to hash keys, can be set to
                         'ketama' to use the ketama compatible implementation.
+        :param vnodes: default number of vnodes per node.
+        :param weight_fn: use this function to calculate the node's weight.
         """
-        if compat is True or hash_fn == 'ketama':
+        hash_fn = kwargs.get('hash_fn', None)
+        vnodes = kwargs.get('vnodes', None)
+        weight_fn = kwargs.get('weight_fn', None)
+
+        if hash_fn == 'ketama':
             if vnodes is None:
                 vnodes = 40
             self.runtime = KetamaRing()
