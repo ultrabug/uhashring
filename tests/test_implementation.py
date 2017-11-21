@@ -19,9 +19,7 @@ def ring():
         nodes={'node1': 1,
                'node2': 1,
                'node3': 1},
-        replicas=4,
-        vnodes=40,
-        compat=True)
+        hash_fn='ketama')
     return ring
 
 
@@ -31,8 +29,6 @@ def ring_fast():
         nodes={'node1': 1,
                'node2': 1,
                'node3': 1},
-        replicas=4,
-        vnodes=40,
         compat=False)
     return ring
 
@@ -48,10 +44,10 @@ def test_ring_size(ring, ring_fast):
     assert ring.size == len(ring._ring)
     assert ring.size == len(ring.get_points())
 
-    assert ring_fast.size == len(ring.get_nodes()) * 160
-    assert ring_fast.size == len(ring._keys)
-    assert ring_fast.size == len(ring._ring)
-    assert ring_fast.size == len(ring.get_points())
+    assert ring_fast.size == len(ring_fast.get_nodes()) * 160
+    assert ring_fast.size == len(ring_fast._keys)
+    assert ring_fast.size == len(ring_fast._ring)
+    assert ring_fast.size == len(ring_fast.get_points())
 
     assert ring.size == ring_fast.size
 
@@ -79,7 +75,6 @@ def test_aliases(ring):
     assert ring.remove_node == ring.__delitem__
     assert ring.continuum == ring.ring
     assert ring.nodes == ring.conf
-    assert ring.regenerate == ring._create_ring
 
 
 def test_ketama_ring_hashi(ring):
@@ -140,7 +135,7 @@ def test_conf():
 
 def test_empty_ring():
     ring = HashRing()
-    assert ring.get('test') == None
+    assert ring.get('test') is None
 
 
 def test_methods_return_types(ring):
@@ -161,9 +156,9 @@ def test_methods_return_types(ring):
 
 
 def test_print_without_error(ring):
-    assert ring.print_continuum() == None
+    assert ring.print_continuum() is None
     ring = HashRing()
-    assert ring.print_continuum() == None
+    assert ring.print_continuum() is None
 
 
 def test_with_non_str_objects(ring):
@@ -173,12 +168,10 @@ def test_with_non_str_objects(ring):
 
 def test_weight_fn():
     ring = HashRing(
-        nodes={'node1': 1,
-               'node2': 1,
-               'node3': 1},
+        nodes={'node1': 1, 'node2': 1, 'node3': 1},
         replicas=4,
         vnodes=40,
-        compat=True,
+        hash_fn='ketama',
         weight_fn=weight_fn)
 
     assert ring.distribution['node1'] == 80
@@ -193,29 +186,36 @@ def test_weight_fn():
 
     with pytest.raises(TypeError):
         ring = HashRing(
-        nodes={'node1': 1,
-               'node2': 1,
-               'node3': 1},
-        replicas=4,
-        vnodes=40,
-        compat=True,
-        weight_fn=12)
+            nodes={'node1': 1, 'node2': 1, 'node3': 1},
+            replicas=4,
+            vnodes=40,
+            hash_fn='ketama',
+            weight_fn=12)
 
     with pytest.raises(TypeError):
         ring = HashRing(
-        nodes={'node1': 1,
-               'node2': 1,
-               'node3': 1},
-        replicas=4,
-        vnodes=40,
-        compat=True,
-        weight_fn='coconut')
+            nodes={'node1': 1, 'node2': 1, 'node3': 1},
+            replicas=4,
+            vnodes=40,
+            hash_fn='ketama',
+            weight_fn='coconut')
 
 
-def test_ring_growth(ring):
-    add_ring = HashRing()
+def test_ring_growth_ketama(ring):
+    add_ring = HashRing(hash_fn='ketama')
     for nodename in ring.nodes:
         add_ring.add_node(nodename)
 
+    assert ring._nodes == add_ring._nodes
     assert ring.ring == add_ring.ring
     assert ring.distribution == add_ring.distribution
+
+
+def test_ring_growth_meta(ring_fast):
+    add_ring = HashRing(compat=False)
+    for nodename in ring_fast.nodes:
+        add_ring.add_node(nodename)
+
+    assert ring_fast._nodes == add_ring._nodes
+    assert ring_fast.ring == add_ring.ring
+    assert ring_fast.distribution == add_ring.distribution
