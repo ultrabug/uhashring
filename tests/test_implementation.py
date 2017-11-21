@@ -219,3 +219,14 @@ def test_ring_growth_meta(ring_fast):
     assert ring_fast._nodes == add_ring._nodes
     assert ring_fast.ring == add_ring.ring
     assert ring_fast.distribution == add_ring.distribution
+
+def test_ketama_ring_shrink_collision():
+    """
+    see issue #6 thanks to @bjhockley
+    """
+    nodes = ["172.31.1.0", "172.31.1.125", "172.31.1.202"]
+    ring = HashRing(nodes, hash_fn='ketama')
+    ring.remove_node(nodes[1])
+    ring.remove_node(nodes[2])
+    ring.remove_node(nodes[0])
+    assert ring.ring == {}
