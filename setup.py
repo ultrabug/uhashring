@@ -56,7 +56,7 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
     cmdclass={'test': PyTest},
-    description='Consistent hashing implementation compatible with the ketama hash ring.',
+    description='Full featured consistent hashing python library compatible with ketama.',
     download_url='https://github.com/ultrabug/uhashring/tags',
     include_package_data=True,
     install_requires=[],
@@ -67,5 +67,5 @@ setup(
     platforms='any',
     tests_require=['python-memcached', 'pytest'],
     url='https://github.com/ultrabug/uhashring',
-    version='0.8',
+    version='1.0',
     zip_safe=True)

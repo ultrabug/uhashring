@@ -13,11 +13,11 @@ This full featured implementation offers:
 
 - a lot of **convenient methods** to use your consistent hash ring in real world applications.
 - simple **integration** with other libs such as memcache through monkey patching.
-- a full `ketama <https://github.com/RJ/ketama>`_ compatibility if you need to use it.
+- a full `ketama <https://github.com/RJ/ketama>`_ compatibility if you need to use it (see important mention below).
 - all the missing functions in the libketama C python binding (which is not even available on pypi) for ketama users.
 - possibility to **use your own weight and hash functions** if you don't care about the ketama compatibility.
 - **instance-oriented usage** so you can use your consistent hash ring object directly in your code (see advanced usage).
-- native **pypy support**.
+- native **pypy support**, since this is a pure python library.
 - tests of implementation, key distribution and ketama compatibility.
 
 Per node weight is also supported and will affect the nodes distribution on the ring.
