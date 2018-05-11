@@ -108,10 +108,10 @@ def test_range(ring):
     r = list(ring.range('test', size=None, unique=False))
     assert len(r) == ring.size
 
-    l = []
+    n = []
     for node in ring.iterate_nodes('test'):
-        l.append(node)
-    assert len(l) == 3
+        n.append(node)
+    assert len(n) == 3
 
     ring_empty = HashRing()
     for node in ring_empty.iterate_nodes('test'):
@@ -220,6 +220,7 @@ def test_ring_growth_meta(ring_fast):
     assert ring_fast.ring == add_ring.ring
     assert ring_fast.distribution == add_ring.distribution
 
+
 def test_ketama_ring_shrink_collision():
     """
     see issue #6 thanks to @bjhockley
@@ -231,10 +232,11 @@ def test_ketama_ring_shrink_collision():
     ring.remove_node(nodes[0])
     assert ring.ring == {}
 
+
 def test_hash_fn():
     """
     """
-    hash_fn = lambda k: k + '_hash'
+    hash_fn = (lambda k: k + '_hash')
     nodes = ["172.31.1.0", "172.31.1.125", "172.31.1.202"]
     ring = HashRing(nodes, hash_fn=hash_fn)
     assert ring.hashi('coconut') == 'coconut_hash'
