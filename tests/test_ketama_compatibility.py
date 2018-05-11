@@ -4,7 +4,7 @@ This test is only run on my dev machine and is not really part of the CI.
 """
 try:
     import ketama
-except:
+except Exception:
     ketama = None
 import pytest
 

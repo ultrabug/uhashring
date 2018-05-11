@@ -78,7 +78,7 @@ class KetamaRing(object):
         """
         try:
             self._nodes.pop(node_name)
-        except:
+        except Exception:
             raise KeyError('node \'{}\' not found, available nodes: {}'.format(
                 node_name, self._nodes.keys()))
         else:
