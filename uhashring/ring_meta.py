@@ -19,12 +19,12 @@ class MetaRing(object):
 
         if hash_fn and not hasattr(hash_fn, '__call__'):
             raise TypeError('hash_fn should be a callable function')
-        self._hash_fn = hash_fn
+        self._hash_fn = hash_fn or (lambda key: int(md5(str(key).encode('utf-8')).hexdigest(), 16))
 
     def hashi(self, key):
         """Returns an integer derived from the md5 hash of the given key.
         """
-        return int(md5(str(key).encode('utf-8')).hexdigest(), 16)
+        return self._hash_fn(key)
 
     def _create_ring(self, nodes):
         """Generate a ketama compatible continuum/ring.
