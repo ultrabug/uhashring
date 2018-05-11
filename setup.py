@@ -70,5 +70,5 @@ setup(
     platforms='any',
     tests_require=['python-memcached', 'pytest'],
     url='https://github.com/ultrabug/uhashring',
-    version='1.0',
+    version='1.1',
     zip_safe=True)
