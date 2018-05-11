@@ -230,3 +230,11 @@ def test_ketama_ring_shrink_collision():
     ring.remove_node(nodes[2])
     ring.remove_node(nodes[0])
     assert ring.ring == {}
+
+def test_hash_fn():
+    """
+    """
+    hash_fn = lambda k: k + '_hash'
+    nodes = ["172.31.1.0", "172.31.1.125", "172.31.1.202"]
+    ring = HashRing(nodes, hash_fn=hash_fn)
+    assert ring.hashi('coconut') == 'coconut_hash'
