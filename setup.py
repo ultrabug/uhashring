@@ -9,6 +9,7 @@ from pkg_resources import get_distribution, parse_version
 from setuptools import find_packages, setup
 from setuptools.command.test import test as TestCommand
 
+
 # Utility function to read the README file.
 # Used for the long_description.  It's nice, because now 1) we have a top level
 # README file and 2) it's easier to type in the README file than to put a raw
@@ -28,7 +29,8 @@ class PyTest(TestCommand):
         TestCommand.finalize_options(self)
 
         # https://bitbucket.org/pypa/setuptools/commits/cf565b6
-        if get_distribution('setuptools').parsed_version < parse_version('18.4'):
+        if get_distribution('setuptools').parsed_version < parse_version(
+                '18.4'):
             self.test_args = []
             self.test_suite = True
 
@@ -37,6 +39,7 @@ class PyTest(TestCommand):
         import pytest
         errno = pytest.main(self.pytest_args)
         sys.exit(errno)
+
 
 setup(
     author='Ultrabug',
