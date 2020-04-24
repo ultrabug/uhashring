@@ -5,7 +5,7 @@ uhashring
 
 .. |version| image:: https://img.shields.io/pypi/v/uhashring.svg
 
-**uhashring** implements **consistent hashing** in pure python.
+**uhashring** implements **consistent hashing** in pure Python.
 
 Consistent hashing is mostly used on distributed systems/caches/databases as this avoid the total reshuffling of your key-node mappings when adding or removing a node in your ring (called continuum on libketama). More information and details about this can be found in the *literature* section.
 
@@ -21,6 +21,11 @@ This full featured implementation offers:
 - tests of implementation, key distribution and ketama compatibility.
 
 Per node weight is also supported and will affect the nodes distribution on the ring.
+
+Python 2 EOL
+============
+
+If you need Python 2 support, make sure to use **uhashring==1.2** as v1.2 is the last release that will support it.
 
 IMPORTANT
 =========
