@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """This test is vastly inspired by Mike Bayer's article:
 http://techspot.zzzeek.org/2012/07/07/the-absolutely-simplest-consistent-hashing-example/
 """
@@ -42,5 +41,5 @@ def test_distribution():
 
     # just to test getting keys, see that we got the values
     # back and not keys or indexes or whatever.
-    assert set(distribution.keys()) == set('node_value{}'.format(i)
-                                           for i in range(1, 1 + numnodes))
+    assert set(distribution.keys()) == {'node_value{}'.format(i)
+                                           for i in range(1, 1 + numnodes)}

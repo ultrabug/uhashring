@@ -1,10 +1,8 @@
-# -*- coding: utf-8 -*-
-
 from collections import Counter
 from hashlib import md5
 
 
-class MetaRing(object):
+class MetaRing:
     """Implement a tunable consistent hashing ring."""
 
     def __init__(self, hash_fn):
@@ -33,7 +31,7 @@ class MetaRing(object):
         for node_name, node_conf in nodes:
             for w in range(0, node_conf['vnodes'] * node_conf['weight']):
                 self._distribution[node_name] += 1
-                self._ring[self.hashi('%s-%s' % (node_name, w))] = node_name
+                self._ring[self.hashi('{}-{}'.format(node_name, w))] = node_name
         self._keys = sorted(self._ring.keys())
 
     def _remove_node(self, node_name):
@@ -49,5 +47,5 @@ class MetaRing(object):
         else:
             self._distribution.pop(node_name)
             for w in range(0, node_conf['vnodes'] * node_conf['weight']):
-                del self._ring[self.hashi('%s-%s' % (node_name, w))]
+                del self._ring[self.hashi('{}-{}'.format(node_name, w))]
             self._keys = sorted(self._ring.keys())

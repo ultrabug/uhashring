@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """ketama is not released under pypi !
 This test is only run on my dev machine and is not really part of the CI.
 """

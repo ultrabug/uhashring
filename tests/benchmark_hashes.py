@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """This is not part of the test suite.
 """
 from hashlib import md5, sha1, sha256

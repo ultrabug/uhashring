@@ -1,12 +1,10 @@
-# -*- coding: utf-8 -*-
-
 from bisect import bisect
 
 from uhashring.ring_ketama import KetamaRing
 from uhashring.ring_meta import MetaRing
 
 
-class HashRing(object):
+class HashRing:
     """Implement a consistent hashing ring."""
 
     def __init__(self, nodes=[], **kwargs):

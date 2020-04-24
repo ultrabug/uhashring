@@ -1,12 +1,9 @@
-# -*- coding: utf-8 -*-
-
 from bisect import insort
 from collections import Counter
 from hashlib import md5
-from sys import version_info
 
 
-class KetamaRing(object):
+class KetamaRing:
     """Implement a ketama compatible consistent hashing ring."""
 
     def __init__(self):
@@ -18,8 +15,7 @@ class KetamaRing(object):
         self._replicas = 4
         self._ring = {}
 
-        if version_info >= (3, ):
-            self._listbytes = lambda x: x
+        self._listbytes = lambda x: x
 
     def hashi(self, key, replica=0):
         """Returns a ketama compatible hash from the given key.
@@ -39,7 +35,7 @@ class KetamaRing(object):
         ks = (node_conf['vnodes'] * len(self._nodes) *
               node_conf['weight']) // self._weight_sum
         for w in range(0, ks):
-            w_node_name = '%s-%s' % (node_name, w)
+            w_node_name = '{}-{}'.format(node_name, w)
             for i in range(0, self._replicas):
                 yield self.hashi(w_node_name, replica=i)
 
