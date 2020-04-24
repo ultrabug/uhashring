@@ -6,23 +6,23 @@ try:
     import ketama
 except Exception:
     ketama = None
-import pytest
-
 from random import randint
 from tempfile import NamedTemporaryFile
+
+import pytest
 from uhashring import HashRing
 
 
 @pytest.fixture
 def ketama_config_file(request):
-    valid_list = NamedTemporaryFile(prefix='py.test_')
-    valid_list.write(b'127.0.0.1:11211\t600\n')
-    valid_list.write(b'127.0.0.1:11212\t400\n')
+    valid_list = NamedTemporaryFile(prefix="py.test_")
+    valid_list.write(b"127.0.0.1:11211\t600\n")
+    valid_list.write(b"127.0.0.1:11212\t400\n")
     valid_list.flush()
 
     def fin():
         valid_list.close()
-        print('closed valid_list')
+        print("closed valid_list")
 
     request.addfinalizer(fin)
     return valid_list.name
@@ -33,7 +33,7 @@ def test_ketama_hashi():
         return
 
     ring = HashRing()
-    assert ring.hashi('test') == ketama.hashi('test')
+    assert ring.hashi("test") == ketama.hashi("test")
 
 
 def test_ketama_compatibility(ketama_config_file):
@@ -41,11 +41,11 @@ def test_ketama_compatibility(ketama_config_file):
         return
 
     ring = HashRing(
-        nodes={'127.0.0.1:11211': 600,
-               '127.0.0.1:11212': 400},
+        nodes={"127.0.0.1:11211": 600, "127.0.0.1:11212": 400},
         replicas=4,
         vnodes=40,
-        compat=True)
+        compat=True,
+    )
     continuum = ketama.Continuum(ketama_config_file)
 
     assert ring.get_points() == continuum.get_points()

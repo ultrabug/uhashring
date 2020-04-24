@@ -19,7 +19,7 @@ def read(fname):
 
 
 class PyTest(TestCommand):
-    user_options = [('pytest-args=', 'a', "Arguments to pass to py.test")]
+    user_options = [("pytest-args=", "a", "Arguments to pass to py.test")]
 
     def initialize_options(self):
         TestCommand.initialize_options(self)
@@ -29,43 +29,46 @@ class PyTest(TestCommand):
         TestCommand.finalize_options(self)
 
         # https://bitbucket.org/pypa/setuptools/commits/cf565b6
-        if get_distribution('setuptools').parsed_version < parse_version(
-                '18.4'):
+        if get_distribution("setuptools").parsed_version < parse_version("18.4"):
             self.test_args = []
             self.test_suite = True
 
     def run_tests(self):
         # import here, cause outside the eggs aren't loaded
         import pytest
+
         errno = pytest.main(self.pytest_args)
         sys.exit(errno)
 
 
 setup(
-    author='Ultrabug',
-    author_email='ultrabug@ultrabug.net',
+    author="Ultrabug",
+    author_email="ultrabug@ultrabug.net",
     classifiers=[
-        'License :: OSI Approved :: BSD License',
-        'Operating System :: POSIX :: Linux',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Topic :: Software Development :: Libraries :: Python Modules',
+        "License :: OSI Approved :: BSD License",
+        "Operating System :: POSIX :: Linux",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    cmdclass={'test': PyTest},
-    description='Full featured consistent hashing python library compatible with ketama.',
-    download_url='https://github.com/ultrabug/uhashring/tags',
+    cmdclass={"test": PyTest},
+    description=(
+        "Full featured consistent hashing python" " library compatible with ketama."
+    ),
+    download_url="https://github.com/ultrabug/uhashring/tags",
     include_package_data=True,
     install_requires=[],
-    license='BSD',
-    long_description=read('README.rst'),
-    name='uhashring',
+    license="BSD",
+    long_description=read("README.rst"),
+    name="uhashring",
     packages=find_packages(),
-    platforms='any',
-    tests_require=['python-memcached', 'pytest'],
-    url='https://github.com/ultrabug/uhashring',
-    version='1.1',
-    zip_safe=True)
+    platforms="any",
+    tests_require=["python-memcached", "pytest"],
+    url="https://github.com/ultrabug/uhashring",
+    version="1.1",
+    zip_safe=True,
+)
