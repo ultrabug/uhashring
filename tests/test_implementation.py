@@ -7,6 +7,7 @@ from collections import Counter
 from uuid import uuid4
 
 import pytest
+
 from uhashring import HashRing
 
 PY3 = sys.version_info >= (3,)

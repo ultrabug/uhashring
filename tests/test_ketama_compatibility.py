@@ -10,6 +10,7 @@ from random import randint
 from tempfile import NamedTemporaryFile
 
 import pytest
+
 from uhashring import HashRing
 
 
