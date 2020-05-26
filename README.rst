@@ -80,20 +80,20 @@ Advanced usage
         'node1': {
                 'hostname': 'node1.fqdn',
                 'instance': redis.StrictRedis(host='node1.fqdn'),
-                'port': 11211,
+                'port': 6379,
                 'vnodes': 40,
                 'weight': 1
             },
         'node2': {
                 'hostname': 'node2.fqdn',
                 'instance': redis.StrictRedis(host='node2.fqdn'),
-                'port': 11211,
+                'port': 6379,
                 'vnodes': 40
             },
         'node3': {
                 'hostname': 'node3.fqdn',
                 'instance': redis.StrictRedis(host='node3.fqdn'),
-                'port': 11211
+                'port': 6379
             }
         }
 
