@@ -229,8 +229,7 @@ def test_ketama_ring_shrink_collision():
 
 
 def test_hash_fn():
-    """
-    """
+    """"""
 
     def hash_fn(k):
         return k + "_hash"

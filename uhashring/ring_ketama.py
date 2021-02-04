@@ -1,29 +1,23 @@
-# -*- coding: utf-8 -*-
-
 from bisect import insort
 from collections import Counter
 from hashlib import md5
-from sys import version_info
 
 
-class KetamaRing(object):
+class KetamaRing:
     """Implement a ketama compatible consistent hashing ring."""
 
     def __init__(self):
-        """Create a new HashRing.
-        """
+        """Create a new HashRing."""
         self._distribution = Counter()
         self._keys = []
         self._nodes = {}
         self._replicas = 4
         self._ring = {}
 
-        if version_info >= (3,):
-            self._listbytes = lambda x: x
+        self._listbytes = lambda x: x
 
     def hashi(self, key, replica=0):
-        """Returns a ketama compatible hash from the given key.
-        """
+        """Returns a ketama compatible hash from the given key."""
         dh = self._listbytes(md5(str(key).encode("utf-8")).digest())
         rd = replica * 4
         return (dh[3 + rd] << 24) | (dh[2 + rd] << 16) | (dh[1 + rd] << 8) | dh[0 + rd]
@@ -38,7 +32,7 @@ class KetamaRing(object):
             node_conf["vnodes"] * len(self._nodes) * node_conf["weight"]
         ) // self._weight_sum
         for w in range(0, ks):
-            w_node_name = "%s-%s" % (node_name, w)
+            w_node_name = f"{node_name}-{w}"
             for i in range(0, self._replicas):
                 yield self.hashi(w_node_name, replica=i)
 
@@ -51,8 +45,7 @@ class KetamaRing(object):
         return map(ord, data)
 
     def _create_ring(self, nodes):
-        """Generate a ketama compatible continuum/ring.
-        """
+        """Generate a ketama compatible continuum/ring."""
         _weight_sum = 0
         for node_conf in self._nodes.values():
             _weight_sum += node_conf["weight"]

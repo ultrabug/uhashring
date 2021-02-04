@@ -1,12 +1,10 @@
-# -*- coding: utf-8 -*-
-
 from bisect import bisect
 
 from uhashring.ring_ketama import KetamaRing
 from uhashring.ring_meta import MetaRing
 
 
-class HashRing(object):
+class HashRing:
     """Implement a consistent hashing ring."""
 
     def __init__(self, nodes=[], **kwargs):
@@ -177,8 +175,7 @@ class HashRing(object):
         return self._get(key, "dict")
 
     def get_instances(self):
-        """Returns a list of the instances of all the configured nodes.
-        """
+        """Returns a list of the instances of all the configured nodes."""
         return [
             c.get("instance") for c in self.runtime._nodes.values() if c.get("instance")
         ]
@@ -228,13 +225,11 @@ class HashRing(object):
         return self._get(key, "weight")
 
     def get_nodes(self):
-        """Returns a list of the names of all the configured nodes.
-        """
+        """Returns a list of the names of all the configured nodes."""
         return self.runtime._nodes.keys()
 
     def get_points(self):
-        """Returns a ketama compatible list of (position, nodename) tuples.
-        """
+        """Returns a ketama compatible list of (position, nodename) tuples."""
         return [(k, self.runtime._ring[k]) for k in self.runtime._keys]
 
     def get_server(self, key):
@@ -261,16 +256,15 @@ class HashRing(object):
                 yield node["nodename"]
 
     def print_continuum(self):
-        """Prints a ketama compatible continuum report.
-        """
+        """Prints a ketama compatible continuum report."""
         numpoints = len(self.runtime._keys)
         if numpoints:
-            print("Numpoints in continuum: {}".format(numpoints))
+            print(f"Numpoints in continuum: {numpoints}")
         else:
             print("Continuum empty")
         for p in self.get_points():
             point, node = p
-            print("{} ({})".format(node, point))
+            print(f"{node} ({point})")
 
     def range(self, key, size=None, unique=True):
         """Returns a generator of nodes' configuration available

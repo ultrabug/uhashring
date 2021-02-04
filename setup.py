@@ -22,11 +22,11 @@ setup(
         "License :: OSI Approved :: BSD License",
         "Operating System :: POSIX :: Linux",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     description=(
@@ -40,8 +40,8 @@ setup(
     name="uhashring",
     packages=find_packages(),
     platforms="any",
-    python_requires=">=2.7",
+    python_requires=">=3.6",
     url="https://github.com/ultrabug/uhashring",
-    version="1.2",
+    version="2.0",
     zip_safe=True,
 )

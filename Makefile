@@ -1,2 +1,2 @@
 qa:
-	isort -y && black . && flake8
+	isort --profile black . && black . && flake8
