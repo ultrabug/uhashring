@@ -42,6 +42,6 @@ setup(
     platforms="any",
     python_requires=">=3.6",
     url="https://github.com/ultrabug/uhashring",
-    version="2.0",
+    version="2.1",
     zip_safe=True,
 )
