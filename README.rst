@@ -199,6 +199,7 @@ HashRing options
 - **hash_fn**: use this callable function to hash keys, can be set to 'ketama' to use the ketama compatible implementation.
 - **vnodes**: default number of vnodes per node.
 - **weight_fn**: user provided function to calculate the node's weight, gets the node conf dict as kwargs.
+- **replicas**: use this to change ketama ring replicas (default: 4)
 
 Available methods
 -----------------
