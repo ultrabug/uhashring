@@ -6,12 +6,12 @@ from hashlib import md5
 class KetamaRing:
     """Implement a ketama compatible consistent hashing ring."""
 
-    def __init__(self):
+    def __init__(self, replicas=4):
         """Create a new HashRing."""
         self._distribution = Counter()
         self._keys = []
         self._nodes = {}
-        self._replicas = 4
+        self._replicas = replicas
         self._ring = {}
 
         self._listbytes = lambda x: x
