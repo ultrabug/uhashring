@@ -21,9 +21,10 @@ class HashRing:
         weight_fn = kwargs.get("weight_fn", None)
 
         if hash_fn == "ketama":
+            ketama_args = {k: v for k, v in kwargs.items() if k in ("replicas",)}
             if vnodes is None:
                 vnodes = 40
-            self.runtime = KetamaRing()
+            self.runtime = KetamaRing(**ketama_args)
         else:
             if vnodes is None:
                 vnodes = 160

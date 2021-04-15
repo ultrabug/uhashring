@@ -237,3 +237,9 @@ def test_hash_fn():
     nodes = ["172.31.1.0", "172.31.1.125", "172.31.1.202"]
     ring = HashRing(nodes, hash_fn=hash_fn)
     assert ring.hashi("coconut") == "coconut_hash"
+
+
+def test_ketama_replica_arg():
+    ring = HashRing([1, 2, 3, 4], hash_fn="ketama", replicas=3)
+    assert ring.runtime._replicas == 3
+    assert ring.get_node("foo") == 4
