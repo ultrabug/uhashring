@@ -4,6 +4,7 @@ uhashring
 |version|
 
 .. |version| image:: https://img.shields.io/pypi/v/uhashring.svg
+.. |ci| image:: https://github.com/ultrabug/uhashring/actions/workflows/ci.yml/badge.svg
 
 **uhashring** implements **consistent hashing** in pure Python.
 
