@@ -6,6 +6,7 @@ http://techspot.zzzeek.org/2012/07/07/the-absolutely-simplest-consistent-hashing
 from collections import Counter
 from math import sqrt
 from random import randint
+from itertools import cycle
 
 from uhashring import HashRing
 
@@ -25,9 +26,10 @@ def test_distribution():
     for i in range(1, numnodes + 1):
         ring["node{}".format(i)] = {"instance": "node_value{}".format(i)}
 
+    deterministic_input = cycle(range(1, numvalues))
     distribution = Counter()
     for i in range(numhits):
-        key = str(randint(1, numvalues))
+        key = str(next(deterministic_input))
         node = ring[key]
         distribution[node] += 1
 
