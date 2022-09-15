@@ -5,7 +5,6 @@ http://techspot.zzzeek.org/2012/07/07/the-absolutely-simplest-consistent-hashing
 
 from collections import Counter
 from math import sqrt
-from random import randint
 from itertools import cycle
 
 from uhashring import HashRing
