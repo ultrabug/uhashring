@@ -28,9 +28,7 @@ class KetamaRing:
 
         :param node_name: the node name.
         """
-        ks = (
-            node_conf["vnodes"] * len(self._nodes) * node_conf["weight"]
-        ) // self._weight_sum
+        ks = (node_conf["vnodes"] * len(self._nodes) * node_conf["weight"]) // self._weight_sum
         for w in range(0, ks):
             w_node_name = f"{node_name}-{w}"
             for i in range(0, self._replicas):
@@ -72,9 +70,7 @@ class KetamaRing:
             self._nodes.pop(node_name)
         except Exception:
             raise KeyError(
-                "node '{}' not found, available nodes: {}".format(
-                    node_name, self._nodes.keys()
-                )
+                "node '{}' not found, available nodes: {}".format(node_name, self._nodes.keys())
             )
         else:
             self._create_ring(self._nodes)

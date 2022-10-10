@@ -1,11 +1,14 @@
 qa:
-	isort --profile black . && black . && flake8
+	hatch run style:check
+
+build:
+	hatch build
 
 clean:
-	rm -rf dist
+	hatch clean
 
 release: clean qa test
-	python3 setup.py sdist && python3 -m twine upload dist/*
+	hatch publish -a
 
 test:
-	pytest -xsvv
+	hatch run +py=py310 test:test

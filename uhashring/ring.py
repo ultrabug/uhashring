@@ -49,8 +49,7 @@ class HashRing:
             nodes = [nodes]
         elif not isinstance(nodes, (dict, list)):
             raise ValueError(
-                "nodes configuration should be a list or a dict,"
-                " got {}".format(type(nodes))
+                "nodes configuration should be a list or a dict," " got {}".format(type(nodes))
             )
 
         conf_changed = False
@@ -177,9 +176,7 @@ class HashRing:
 
     def get_instances(self):
         """Returns a list of the instances of all the configured nodes."""
-        return [
-            c.get("instance") for c in self.runtime._nodes.values() if c.get("instance")
-        ]
+        return [c.get("instance") for c in self.runtime._nodes.values() if c.get("instance")]
 
     def get_key(self, key):
         """Alias of ketama hashi method, returns the hash of the given key.

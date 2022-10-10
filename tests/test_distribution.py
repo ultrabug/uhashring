@@ -4,8 +4,8 @@ http://techspot.zzzeek.org/2012/07/07/the-absolutely-simplest-consistent-hashing
 """
 
 from collections import Counter
-from math import sqrt
 from itertools import cycle
+from math import sqrt
 
 from uhashring import HashRing
 
@@ -44,6 +44,4 @@ def test_distribution():
 
     # just to test getting keys, see that we got the values
     # back and not keys or indexes or whatever.
-    assert set(distribution.keys()) == set(
-        "node_value{}".format(i) for i in range(1, 1 + numnodes)
-    )
+    assert set(distribution.keys()) == set("node_value{}".format(i) for i in range(1, 1 + numnodes))
