@@ -1,18 +1,18 @@
 # CHANGELOG
 
+## version 2.2
+* support for python 3.10
+* drop support of EOL python 3.6
+* migrate to hatch
+* add CHANGELOG
+* fix test_distribution to be deterministic (using randint causes a fai… (#17), by Ben Hockley
+* ci: add github actions
+
 ## version 2.1
 * document ketama ring replicas configuration
 * makefile: add clean, release and test targets
 * add paypal funding
-* support for python 3.10
-* requirements: bump tox and pytest
-* ci: add github actions
-* requirements-tests: pytest minimal should support python 3.6
 * tox: add gh-actions mapping
-* Merge pull request #15 from ultrabug/python310
-* README: add ci badge
-* README: show ci badge
-* fix test_distribution to be deterministic (using randint causes a fai… (#17), by Ben Hockley
 
 ## version 2.0
 * python3.6+ syntax update and code QA
