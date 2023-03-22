@@ -24,6 +24,7 @@ classifiers = [
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
     "Topic :: Software Development :: Libraries :: Python Modules",
@@ -60,7 +61,7 @@ test = [
 ]
 
 [[tool.hatch.envs.test.matrix]]
-python = ["py37", "py38", "py39", "py310", "pypy3"]
+python = ["py37", "py38", "py39", "py310", "py311", "pypy3"]
 type = ["default"]
 
 [tool.hatch.envs.style]
