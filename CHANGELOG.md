@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## version 2.3
+* support for python 3.11
+
 ## version 2.2
 * support for python 3.10
 * drop support of EOL python 3.6
