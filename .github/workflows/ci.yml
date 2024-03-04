@@ -9,7 +9,7 @@ jobs:
     strategy:
       max-parallel: 5
       matrix:
-        python-version: [3.8, 3.9, '3.10', '3.11', pypy-3.8-v7.x]
+        python-version: [3.8, 3.9, '3.10', '3.11', pypy-3.10-v7.x]
         include:
           - python-version: 3.8
             py: py38
@@ -19,7 +19,7 @@ jobs:
             py: py310
           - python-version: '3.11'
             py: py311
-          - python-version: pypy-3.8-v7.x
+          - python-version: pypy-3.10-v7.x
             py: pypy3
 
     steps:
