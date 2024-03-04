@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "uhashring"
 dynamic = ["version"]
 description = "Full featured consistent hashing python library compatible with ketama."
-readme = "README.rst"
+readme = "README.md"
 license = "BSD-2-Clause"
 requires-python = ">=3.8"
 authors = [
