@@ -7,7 +7,7 @@ name = "uhashring"
 dynamic = ["version"]
 description = "Full featured consistent hashing python library compatible with ketama."
 readme = "README.md"
-license = "BSD-2-Clause"
+license = "BSD-3-Clause"
 requires-python = ">=3.8"
 authors = [
     { name = "Ultrabug", email = "ultrabug@ultrabug.net" },
@@ -40,6 +40,7 @@ path = "uhashring/__init__.py"
 [tool.hatch.build.targets.sdist]
 include = [
     "/uhashring",
+    "LICENSE"
 ]
 
 [tool.hatch.envs.default.scripts]
