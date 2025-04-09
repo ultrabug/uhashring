@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## version 2.4
+* update and ship license in dist files, by Byron Sakiadis
+* support for python 3.12
+* support for python 3.13
+* drop support of EOL python 3.8
+
 ## version 2.3
 * support for python 3.11
 
