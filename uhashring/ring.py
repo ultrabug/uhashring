@@ -305,6 +305,14 @@ class HashRing:
                         break
 
     def regenerate(self):
+        """Regenerate the ring from the current nodes configuration.
+
+        Useful only when using `weight_fn`: re-evaluates it for every node
+        (preserving each node's other configuration) before rebuilding the
+        ring, so a `weight_fn` whose output changed over time (e.g. based
+        on external, mutable state) is reflected -- including a decrease.
+        """
+        self._configure_nodes(dict(self.runtime._nodes))
         self.runtime._create_ring(self.runtime._nodes.items())
 
     @property
