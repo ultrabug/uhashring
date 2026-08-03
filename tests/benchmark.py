@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """This is not part of the test suite.
 """
 try:
@@ -33,7 +32,7 @@ ring = HashRing(
     nodes={"127.0.0.1:11211": 600, "127.0.0.1:11212": 400},
     replicas=4,
     vnodes=40,
-    compat=True,
+    hash_fn="ketama",
 )
 pt = time()
 for i in range(num):

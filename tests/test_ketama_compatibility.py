@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """ketama is not released under pypi !
 This test is only run on my dev machine and is not really part of the CI.
 """
@@ -45,7 +44,7 @@ def test_ketama_compatibility(ketama_config_file):
         nodes={"127.0.0.1:11211": 600, "127.0.0.1:11212": 400},
         replicas=4,
         vnodes=40,
-        compat=True,
+        hash_fn="ketama",
     )
     continuum = ketama.Continuum(ketama_config_file)
 
