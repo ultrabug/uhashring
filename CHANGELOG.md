@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## version 2.5
+* security: pypi trusted publisher
+* codeql: add workflow and dependabot
+* bump hatch required version for pypi metadata
+* fix: track MetaRing per-node vnodes to prevent stale ring entries
+* fix: handle vnode hash collisions in MetaRing ring maintenance
+* ci(python): drop 3.9 EOL version and test each matrix version
+* chore: drop leftover Python 2 compatibility code
+* refactor: align KetamaRing._remove_node with MetaRing
+* ci(pypy): move to PyPy 3.11
+
 ## version 2.4
 * update and ship license in dist files, by Byron Sakiadis
 * support for python 3.12
