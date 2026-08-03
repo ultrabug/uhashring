@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Regression tests for MetaRing stale-vnodes bugs.
 
 MetaRing._create_ring() used to be purely additive: it appended vnodes into

@@ -14,11 +14,9 @@ class KetamaRing:
         self._replicas = replicas
         self._ring = {}
 
-        self._listbytes = lambda x: x
-
     def hashi(self, key, replica=0):
         """Returns a ketama compatible hash from the given key."""
-        dh = self._listbytes(md5(str(key).encode("utf-8")).digest())
+        dh = md5(str(key).encode("utf-8")).digest()
         rd = replica * 4
         return (dh[3 + rd] << 24) | (dh[2 + rd] << 16) | (dh[1 + rd] << 8) | dh[0 + rd]
 
@@ -33,14 +31,6 @@ class KetamaRing:
             w_node_name = f"{node_name}-{w}"
             for i in range(0, self._replicas):
                 yield self.hashi(w_node_name, replica=i)
-
-    @staticmethod
-    def _listbytes(data):
-        """Python 2 compatible int iterator from str.
-
-        :param data: the string to int iterate upon.
-        """
-        return map(ord, data)
 
     def _create_ring(self, nodes):
         """Generate a ketama compatible continuum/ring."""

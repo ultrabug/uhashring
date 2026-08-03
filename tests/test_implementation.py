@@ -1,16 +1,13 @@
-# -*- coding: utf-8 -*-
 """
 """
-import sys
 import types
 from collections import Counter
+from operator import itemgetter
 from uuid import uuid4
 
 import pytest
 
 from uhashring import HashRing
-
-PY3 = sys.version_info >= (3,)
 
 
 @pytest.fixture
@@ -21,7 +18,7 @@ def ring():
 
 @pytest.fixture
 def ring_fast():
-    ring = HashRing(nodes={"node1": 1, "node2": 1, "node3": 1}, compat=False)
+    ring = HashRing(nodes={"node1": 1, "node2": 1, "node3": 1})
     return ring
 
 
@@ -79,23 +76,20 @@ def test_faster_ring_hashi(ring_fast):
     assert h == 12707736894140473154801792860916528374
 
 
-# XXX https://docs.python.org/3/whatsnew/3.0.html#ordering-comparisons
-@pytest.mark.skipif(PY3, reason="requires python26, python27")
 def test_range(ring):
-    r = list(ring.range("test"))
-    r.sort()
-    c = ring.conf.values()
-    c.sort()
-    assert r == c
+    r = sorted(ring.range("test"), key=itemgetter("nodename"))
+    assert r == sorted(ring.conf.values(), key=itemgetter("nodename"))
 
     r = list(ring.range("test", size=2, unique=True))
     assert len(r) == 2
+    assert len({node["nodename"] for node in r}) == 2
 
     r = list(ring.range("test", size=2, unique=False))
     assert len(r) == 2
 
-    r = list(ring.range("1800"))  # 1800 is at position 0
-    r = list(ring.range("849"))  # 849 is at position -2
+    # both keys make the generator wrap around the end of the ring
+    assert len(list(ring.range("1800"))) == 3  # 1800 is at position 0
+    assert len(list(ring.range("849"))) == 3  # 849 is at position -2
 
     r = list(ring.range("test", size=None, unique=False))
     assert len(r) == ring.size
@@ -135,7 +129,7 @@ def test_methods_return_types(ring):
     assert isinstance(ring.get("test"), dict)
     assert isinstance(ring.get_instances(), list)
     assert isinstance(ring.get_node("test"), str)
-    assert isinstance(ring.get_nodes(), type({}.keys()) if PY3 else list)
+    assert isinstance(ring.get_nodes(), type({}.keys()))
     assert isinstance(ring.get_node_hostname("test"), str)
     assert isinstance(ring.get_node_port("test"), type(None))
     assert isinstance(ring.get_node_pos("test"), int)
@@ -207,7 +201,7 @@ def test_ring_growth_ketama(ring):
 
 
 def test_ring_growth_meta(ring_fast):
-    add_ring = HashRing(compat=False)
+    add_ring = HashRing()
     for nodename in ring_fast.nodes:
         add_ring.add_node(nodename)
 

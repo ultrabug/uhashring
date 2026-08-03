@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """This test is vastly inspired by Mike Bayer's article:
 http://techspot.zzzeek.org/2012/07/07/the-absolutely-simplest-consistent-hashing-example/
 """
