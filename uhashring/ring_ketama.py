@@ -56,11 +56,9 @@ class KetamaRing:
 
         :param node_name: the node name.
         """
-        try:
-            self._nodes.pop(node_name)
-        except Exception:
+        if node_name not in self._nodes:
             raise KeyError(
                 "node '{}' not found, available nodes: {}".format(node_name, self._nodes.keys())
             )
-        else:
-            self._create_ring(self._nodes)
+        self._nodes.pop(node_name)
+        self._create_ring(self._nodes)
