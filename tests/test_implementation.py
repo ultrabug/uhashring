@@ -171,7 +171,7 @@ def test_weight_fn():
     assert ring.distribution["node2"] == 160
     assert ring.distribution["node3"] == 240
 
-    ring.regenerate
+    ring.regenerate()
 
     assert ring.distribution["node1"] == 80
     assert ring.distribution["node2"] == 160

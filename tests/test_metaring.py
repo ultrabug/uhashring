@@ -113,3 +113,47 @@ def test_remove_unknown_node_raises_keyerror():
 
     with pytest.raises(KeyError):
         hr.remove_node("does-not-exist")
+
+
+def test_readd_node_after_collision_and_removal_does_not_crash():
+    """Regression: when two nodes' vnodes hash to the same ring point,
+    `_ring` only ever holds the last writer, but both nodes still record
+    that point in `_node_points`. Removing the winning node deletes the
+    shared point from `_ring`; recreating the losing node's points must
+    then tolerate that its recorded points are no longer (or no longer
+    solely) present in `_ring`, instead of raising KeyError."""
+
+    def colliding_hash(key):
+        return int(key.rsplit("-", 1)[1])
+
+    hr = HashRing(nodes=["A"], hash_fn=colliding_hash, vnodes=3)
+    hr["B"] = {"vnodes": 3}  # B's points 0,1,2 collide with A's; B wins in _ring
+    del hr["B"]  # _ring becomes {}
+
+    # must not raise KeyError due to A's stale, now-emptied points
+    hr["A"] = {"weight": 2}
+
+
+def test_remove_node_is_atomic_when_internal_state_is_desynced():
+    """Regression: `_remove_node` must resolve/validate both the `_nodes`
+    and `_node_points` lookups before mutating any state. If they ever
+    disagree, the removal must be all-or-nothing -- not pop `_nodes` and
+    then blow up reporting the node as "not found" despite having just
+    removed it."""
+    hr = HashRing(nodes=["node1", "node2"])
+    runtime = hr.runtime
+    # simulate an internal desync: "node2" known to _nodes but missing
+    # from _node_points.
+    del runtime._node_points["node2"]
+
+    original_nodes = dict(runtime._nodes)
+    original_distribution = Counter(runtime._distribution)
+    original_ring = dict(runtime._ring)
+
+    with pytest.raises(KeyError):
+        runtime._remove_node("node2")
+
+    # all-or-nothing: nothing was mutated by the failed removal
+    assert runtime._nodes == original_nodes
+    assert runtime._distribution == original_distribution
+    assert runtime._ring == original_ring
