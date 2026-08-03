@@ -8,7 +8,7 @@ dynamic = ["version"]
 description = "Full featured consistent hashing python library compatible with ketama."
 readme = "README.md"
 license = "BSD-3-Clause"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 authors = [
     { name = "Ultrabug", email = "ultrabug@ultrabug.net" },
 ]
@@ -20,7 +20,6 @@ classifiers = [
     "Operating System :: POSIX :: Linux",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -62,7 +61,7 @@ test = [
 ]
 
 [[tool.hatch.envs.test.matrix]]
-python = ["py39", "py310", "py311", "py312", "py313", "pypy3"]
+python = ["py310", "py311", "py312", "py313", "pypy3"]
 type = ["default"]
 
 [tool.hatch.envs.style]
